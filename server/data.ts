@@ -4,12 +4,12 @@ export interface Ingredient {
   price: number
 }
 
-export interface DraftOrder {
-  customerId: string
-  ingredientIds: string[]
-}
+// export interface DraftOrder {
+//   customerId: string
+//   ingredientIds: string[]
+// }
 
-export interface Order extends DraftOrder {
+export interface Order extends Cart {
   _id: string
   state: "cart" | "processing" | "delivering" | "done"
   operatorId?: string
