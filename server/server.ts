@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import pino from 'pino'
 import expressPinoLogger from 'express-pino-logger'
 import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
-import { DraftOrder, Order } from './data'
+import { Cart, Order } from './data'
 
 // set up Mongo
 const url = 'mongodb://127.0.0.1:27017'
@@ -67,18 +67,18 @@ app.get("/api/customer/:customerId/cart", async (req, res) => {
   res.status(200).json(draftOrder || { customerId, productIds: [] })
 })
 
-app.put("/api/customer/:customerId/draft-order", async (req, res) => {
-  const order: DraftOrder = req.body
+app.put("/api/customer/:customerId/update-cart", async (req, res) => {
+  const order: Cart = req.body
   // TODO: validate customerId
 
   const result = await orders.updateOne(
     {
       customerId: req.params.customerId,
-      state: "draft",
+      state: "cart",
     },
     {
       $set: {
-        ingredientIds: order.ingredientIds
+        productIds: order.productIds
       }
     },
     {

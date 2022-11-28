@@ -36,3 +36,7 @@ export interface Product {
   rating: number
 }
 
+export interface Cart {
+  customerId: string
+  productIds: string[]
+}
