@@ -12,7 +12,7 @@ let db: Db
 let customers: Collection
 let orders: Collection
 let operators: Collection
-let possibleIngredients: Collection
+let inventory: Collection
 
 // set up Express
 const app = express()
@@ -28,12 +28,12 @@ const logger = pino({
 app.use(expressPinoLogger({ logger }))
 
 // app routes
-app.get("/api/possible-ingredients", async (req, res) => {
-  res.status(200).json(await possibleIngredients.find({}).toArray())
+app.get("/api/inventory", async (req, res) => {
+  res.status(200).json(await inventory.find({}).toArray())
 })
 
 app.get("/api/orders", async (req, res) => {
-  res.status(200).json(await orders.find({ state: { $ne: "draft" }}).toArray())
+  res.status(200).json(await orders.find({ state: { $ne: "cart" }}).toArray())
 })
 
 app.get("/api/customer/:customerId", async (req, res) => {
@@ -43,7 +43,7 @@ app.get("/api/customer/:customerId", async (req, res) => {
     res.status(404).json({ _id })
     return
   }
-  customer.orders = await orders.find({ customerId: _id, state: { $ne: "draft" } }).toArray()
+  customer.orders = await orders.find({ customerId: _id, state: { $ne: "cart" } }).toArray()
   res.status(200).json(customer)
 })
 
@@ -58,13 +58,13 @@ app.get("/api/operator/:operatorId", async (req, res) => {
   res.status(200).json(operator)
 })
 
-app.get("/api/customer/:customerId/draft-order", async (req, res) => {
+app.get("/api/customer/:customerId/cart", async (req, res) => {
   const { customerId } = req.params
 
   // TODO: validate customerId
 
-  const draftOrder = await orders.findOne({ state: "draft", customerId })
-  res.status(200).json(draftOrder || { customerId, ingredientIds: [] })
+  const draftOrder = await orders.findOne({ state: "cart", customerId })
+  res.status(200).json(draftOrder || { customerId, productIds: [] })
 })
 
 app.put("/api/customer/:customerId/draft-order", async (req, res) => {
@@ -161,10 +161,10 @@ client.connect().then(() => {
   operators = db.collection('operators')
   orders = db.collection('orders')
   customers = db.collection('customers')
-  possibleIngredients = db.collection('possibleIngredients')
+  inventory = db.collection('inventory')
 
   // start server
   app.listen(port, () => {
-    console.log(`Smoothie server listening on port ${port}`)
+    console.log(`Server listening on port ${port}`)
   })
 })
