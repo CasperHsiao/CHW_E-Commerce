@@ -11,7 +11,7 @@ export interface DraftOrder {
 
 export interface Order extends DraftOrder {
   _id: string
-  state: "draft" | "queued" | "blending" | "done"
+  state: "cart" | "processing" | "delivering" | "done"
   operatorId?: string
 }
 

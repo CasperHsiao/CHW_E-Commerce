@@ -96,7 +96,7 @@ app.post("/api/customer/:customerId/checkout-cart", async (req, res) => {
     },
     {
       $set: {
-        state: "processed",
+        state: "processing",
       }
     }
   )
@@ -122,13 +122,13 @@ app.put("/api/order/:orderId", async (req, res) => {
     },
   }
   switch (order.state) {
-    case "blending":
-      condition.state.$in.push("queued")
+    case "delivering":
+      condition.state.$in.push("processing")
       // can only go to blending state if no operator assigned (or is the current user, due to idempotency)
       condition.$or = [{ operatorId: { $exists: false }}, { operatorId: order.operatorId }]
       break
     case "done":
-      condition.state.$in.push("blending")
+      condition.state.$in.push("delivering")
       condition.operatorId = order.operatorId
       break
     default:
