@@ -28,3 +28,11 @@ export interface Operator {
   _id: string
   name: string
 }
+
+export interface Product {
+  name: string
+  price: number
+  description: string
+  rating: number
+}
+
