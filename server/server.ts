@@ -88,20 +88,20 @@ app.put("/api/customer/:customerId/update-cart", async (req, res) => {
   res.status(200).json({ status: "ok" })
 })
 
-app.post("/api/customer/:customerId/submit-draft-order", async (req, res) => {
+app.post("/api/customer/:customerId/checkout-cart", async (req, res) => {
   const result = await orders.updateOne(
     {
       customerId: req.params.customerId,
-      state: "draft",
+      state: "cart",
     },
     {
       $set: {
-        state: "queued",
+        state: "processed",
       }
     }
   )
   if (result.modifiedCount === 0) {
-    res.status(400).json({ error: "no draft order" })
+    res.status(400).json({ error: "no cart found" })
     return
   }
   res.status(200).json({ status: "ok" })
