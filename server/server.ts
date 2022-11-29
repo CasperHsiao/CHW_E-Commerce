@@ -375,9 +375,12 @@ client.connect().then(() => {
     app.get(
       "/api/login-callback",
       passport.authenticate("oidc", {
-        successRedirect: "/customer/alice",
         failureRedirect: "/api/login",
-      })
+      }),
+      (req, res) => {
+        const _id = req.user.preferred_username
+        res.redirect(`/customer/${_id}`)
+      }
     )    
 
     // start server
