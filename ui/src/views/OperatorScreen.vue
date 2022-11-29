@@ -13,7 +13,7 @@
             Done
           </b-button>
         </span>
-        <b-button v-else @click="updateOrder(cellScope.item._id, 'blending')">Start Blending</b-button>
+        <b-button v-else @click="updateOrder(cellScope.item._id, 'delivering')">Start Delivering</b-button>
       </template>
     </b-table>
   </div>
@@ -46,7 +46,7 @@ async function refresh() {
 }
 onMounted(refresh)
 
-const fields = ["_id", "customerId", "state", {key: 'ingredientIds', label: 'Ingredients', formatter: (value: string[]) => {return value.join(", ")}}, "operatorId"]
+const fields = ["_id", "customerId", "state", {key: 'productIds', label: 'Ingredients', formatter: (value: string[]) => {return value.join(", ")}}, "operatorId"]
 
 async function updateOrder(orderId: string, state: string) {
   await fetch(
