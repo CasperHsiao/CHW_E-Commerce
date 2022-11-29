@@ -1,6 +1,6 @@
 import { createServer } from "http"
 import { Server } from "socket.io"
-// import { Action, createEmptyGame, doAction, filterCardsForPlayerPerspective, Card } from "./model"
+import { Action, createEmptyGame, doAction, filterCardsForPlayerPerspective, Card } from "./model"
 import express, { NextFunction, Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import pino from 'pino'
@@ -25,8 +25,8 @@ if (process.env.PROXY_KEYCLOAK_TO_LOCALHOST) {
 }
 
 // set up Mongo
-const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
-const client = new MongoClient(mongoUrl)
+const url = 'mongodb://127.0.0.1:27017'
+const client = new MongoClient(url)
 let db: Db
 let customers: Collection
 let orders: Collection
@@ -92,92 +92,92 @@ const wrap = (middleware: any) => (socket: any, next: any) => middleware(socket.
 io.use(wrap(sessionMiddleware))
 
 // hard-coded game configuration
-// const playerUserIds = ["dennis", "alice"]
-// let gameState = createEmptyGame(playerUserIds, 1, 2)
+const playerUserIds = ["dennis", "alice"]
+let gameState = createEmptyGame(playerUserIds, 1, 2)
 
-// function emitUpdatedCardsForPlayers(cards: Card[], newGame = false) {
-//   gameState.playerNames.forEach((_, i) => {
-//     let updatedCardsFromPlayerPerspective = filterCardsForPlayerPerspective(cards, i)
-//     if (newGame) {
-//       updatedCardsFromPlayerPerspective = updatedCardsFromPlayerPerspective.filter(card => card.locationType !== "unused")
-//     }
-//     console.log("emitting update for player", i, ":", updatedCardsFromPlayerPerspective)
-//     io.to(String(i)).emit(
-//       newGame ? "all-cards" : "updated-cards", 
-//       updatedCardsFromPlayerPerspective,
-//     )
-//   })
-// }
+function emitUpdatedCardsForPlayers(cards: Card[], newGame = false) {
+  gameState.playerNames.forEach((_, i) => {
+    let updatedCardsFromPlayerPerspective = filterCardsForPlayerPerspective(cards, i)
+    if (newGame) {
+      updatedCardsFromPlayerPerspective = updatedCardsFromPlayerPerspective.filter(card => card.locationType !== "unused")
+    }
+    console.log("emitting update for player", i, ":", updatedCardsFromPlayerPerspective)
+    io.to(String(i)).emit(
+      newGame ? "all-cards" : "updated-cards", 
+      updatedCardsFromPlayerPerspective,
+    )
+  })
+}
 
-// io.on('connection', client => {
-//   const user = (client.request as any).session?.passport?.user
-//   logger.info("new socket connection for user " + JSON.stringify(user))
-//   if (!user) {
-//     client.disconnect()
-//     return
-//   }
+io.on('connection', client => {
+  const user = (client.request as any).session?.passport?.user
+  logger.info("new socket connection for user " + JSON.stringify(user))
+  if (!user) {
+    client.disconnect()
+    return
+  }
 
-//   function emitGameState() {
-//     client.emit(
-//       "game-state", 
-//       playerIndex,
-//       gameState.currentTurnPlayerIndex,
-//       gameState.phase,
-//       gameState.playCount,
-//     )
-//   }
+  function emitGameState() {
+    client.emit(
+      "game-state", 
+      playerIndex,
+      gameState.currentTurnPlayerIndex,
+      gameState.phase,
+      gameState.playCount,
+    )
+  }
   
-//   console.log("New client")
-//   let playerIndex: number | "all" = playerUserIds.indexOf(user.preferred_username)
-//   if (playerIndex === -1) {
-//     playerIndex = "all"
-//   }
-//   client.join(String(playerIndex))
+  console.log("New client")
+  let playerIndex: number | "all" = playerUserIds.indexOf(user.preferred_username)
+  if (playerIndex === -1) {
+    playerIndex = "all"
+  }
+  client.join(String(playerIndex))
   
-//   if (typeof playerIndex === "number") {
-//     client.emit(
-//       "all-cards", 
-//       filterCardsForPlayerPerspective(Object.values(gameState.cardsById), playerIndex).filter(card => card.locationType !== "unused"),
-//     )
-//   } else {
-//     client.emit(
-//       "all-cards", 
-//       Object.values(gameState.cardsById),    
-//     )
-//   }
-//   emitGameState()
+  if (typeof playerIndex === "number") {
+    client.emit(
+      "all-cards", 
+      filterCardsForPlayerPerspective(Object.values(gameState.cardsById), playerIndex).filter(card => card.locationType !== "unused"),
+    )
+  } else {
+    client.emit(
+      "all-cards", 
+      Object.values(gameState.cardsById),    
+    )
+  }
+  emitGameState()
 
-//   client.on("action", (action: Action) => {
-//     if (typeof playerIndex === "number") {
-//       const updatedCards = doAction(gameState, { ...action, playerIndex })
-//       emitUpdatedCardsForPlayers(updatedCards)
-//     } else {
-//       // no actions allowed from "all"
-//     }
-//     io.to("all").emit(
-//       "updated-cards", 
-//       Object.values(gameState.cardsById),    
-//     )
-//     io.emit(
-//       "game-state", 
-//       null,
-//       gameState.currentTurnPlayerIndex,
-//       gameState.phase,
-//       gameState.playCount,
-//     )
-//   })
+  client.on("action", (action: Action) => {
+    if (typeof playerIndex === "number") {
+      const updatedCards = doAction(gameState, { ...action, playerIndex })
+      emitUpdatedCardsForPlayers(updatedCards)
+    } else {
+      // no actions allowed from "all"
+    }
+    io.to("all").emit(
+      "updated-cards", 
+      Object.values(gameState.cardsById),    
+    )
+    io.emit(
+      "game-state", 
+      null,
+      gameState.currentTurnPlayerIndex,
+      gameState.phase,
+      gameState.playCount,
+    )
+  })
 
-//   client.on("new-game", () => {
-//     gameState = createEmptyGame(gameState.playerNames, 1, 2)
-//     const updatedCards = Object.values(gameState.cardsById)
-//     emitUpdatedCardsForPlayers(updatedCards, true)
-//     io.to("all").emit(
-//       "all-cards", 
-//       updatedCards,
-//     )
-//     emitGameState()
-//   })
-// })
+  client.on("new-game", () => {
+    gameState = createEmptyGame(gameState.playerNames, 1, 2)
+    const updatedCards = Object.values(gameState.cardsById)
+    emitUpdatedCardsForPlayers(updatedCards, true)
+    io.to("all").emit(
+      "all-cards", 
+      updatedCards,
+    )
+    emitGameState()
+  })
+})
 
 // app routes
 app.get("/api/inventory", async (req, res) => {
