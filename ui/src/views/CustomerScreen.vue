@@ -6,16 +6,17 @@
     <b-button @click="refresh" class="mb-2">Refresh</b-button>
     <b-table v-if="customer" :items="customer.orders" :fields="orderFields"/>
     <h2>Shop</h2>
-    <b-button-group>
-      <b-button
+    <b-card-group columns>
+      <b-card
         v-for="(prod, idx) in inventory"
         :key="idx"
-        variant="primary"
-        @click="addToCart(prod.name)"
+        :title="prod.name"
+        :footer="prod.description"
       >
-        Add {{ prod.name }}
-      </b-button>
-    </b-button-group>
+        <b-card-text>$ {{prod.price}}</b-card-text>
+        <b-button variant="primary" @click="addToCart(prod.name)">Add to cart</b-button>
+      </b-card>
+    </b-card-group>
     <h3>Your Cart</h3>
     <b-list-group flush>
       <b-list-group-item
