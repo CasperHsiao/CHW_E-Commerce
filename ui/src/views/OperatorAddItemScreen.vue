@@ -5,20 +5,26 @@
       text-variant="white"
       :header="`Add Item Screen`"
     />
-    <h2>Add Items</h2>
-    <div class="mt-2 mx-1">
-      <p>Item Name:</p>
-      <input v-model="product.name" placeholder="Item Name" />
+    <h2 style="color: Brown;">Add Items</h2>
 
-      <p>Item Price:</p>
-      <input v-model="product.price" placeholder="Item Price" />
-
-      <p>Item Description:</p>
-      <textarea v-model="product.description" placeholder="Item Description"></textarea>
-
-      <p>Item Rate:</p>
-      <input v-model="product.rating" placeholder="Item Rate" />
-    </div>
+    <form>
+      <div class="form-group">
+        <label style="color: teal;font-weight: 500;">Item Name</label>
+        <input class = "form-control form-control-sm" v-model="product.name" placeholder="item name" />
+      </div>
+      <div class="form-group">
+        <label style="color: teal;font-weight: 500;">Item Price</label>
+        <input class = "form-control" v-model="product.price" />
+      </div>
+      <div class="form-group">
+        <label style="color: teal;font-weight: 500;">Item Description</label>
+        <input class = "form-control form-control-sm" v-model="product.description" placeholder="item description" />
+      </div>
+      <div class="form-group">
+        <label style="color: teal;font-weight: 500;">Item Rating</label>
+        <input class = "form-control" v-model="product.rating" />
+      </div>
+    </form>
     <div class="mt-2 mx-1">
       <b-button @click="addItem()">Confirm</b-button>
     </div>
@@ -34,21 +40,6 @@ import { Operator, Order } from "../../../server/data";
 
 import { Product } from "../../../server/data";
 
-// props
-// interface Props {
-//   operatorId: string
-// }
-
-// // default values for props
-// const props = withDefaults(defineProps<Props>(), {
-//   operatorId: "",
-// })
-
-// const operator: Ref<Operator | null> = ref(null)
-// const orders: Ref<Order[]> = ref([])
-
-// const name = computed(() => operator.value?.name || props.operatorId)
-
 const product: Ref<Product | undefined> = ref({
   name: "",
   price: 0,
@@ -57,8 +48,6 @@ const product: Ref<Product | undefined> = ref({
 });
 
 async function addItem() {
-  // this.itemName = this.item_name
-  console.log("wilson");
   console.log(product.value.name);
   console.log(product.value.price);
   console.log(product.value.description);
@@ -80,30 +69,5 @@ async function addItem() {
     }
   )
 }
-// async function refresh() {
-//   if (props.operatorId) {
-//     operator.value = await (await fetch("/api/operator/" + encodeURIComponent(props.operatorId))).json()
-//   }
-//   orders.value = await (await fetch("/api/orders/")).json()
-// }
-// onMounted(refresh)
 
-// const fields = ["_id", "customerId", "state", {key: 'ingredientIds', label: 'Ingredients', formatter: (value: string[]) => {return value.join(", ")}}, "operatorId"]
-
-// async function updateOrder(orderId: string, state: string) {
-//   await fetch(
-//     "/api/order/" + encodeURIComponent(orderId),
-//     {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       method: "PUT",
-//       body: JSON.stringify({
-//         operatorId: props.operatorId,
-//         state,
-//       })
-//     }
-//   )
-//   await refresh()
-// }
 </script>

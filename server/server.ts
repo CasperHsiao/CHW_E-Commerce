@@ -242,10 +242,6 @@ app.put("/api/customer/:customerId/update-cart", async (req, res) => {
 
 app.put("/api/operator/addnewitem", async (req, res) => {
   const add_product: Product = req.body
-  console.log("wilson adding item")
-  console.log(add_product)
-  // console.log(typeof add_product) 
-  // console.log(add_product["productIds"])
   const addItemResult = await inventory.insertOne(add_product)
   res.status(200).json({ status: "ok" })
 })
