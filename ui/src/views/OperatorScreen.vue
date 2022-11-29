@@ -2,6 +2,7 @@
   <div class="mx-3 my-3">
     <b-jumbotron bg-variant="info" text-variant="white" :header="`Work Screen for ${name}`" />
     <h2>Orders</h2>
+    <router-link :to="{ name: 'operatoradditemscreen' }"><button>Additem</button></router-link>
     <b-button @click="refresh" class="mb-2">Refresh</b-button>
     <b-table :items="orders" :fields="fields">
       <template #cell(operatorId)="cellScope">
@@ -62,4 +63,5 @@ async function updateOrder(orderId: string, state: string) {
   )
   await refresh()
 }
+
 </script>
