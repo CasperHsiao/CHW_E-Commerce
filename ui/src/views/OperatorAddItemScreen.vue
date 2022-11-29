@@ -1,47 +1,38 @@
 <template>
   <div class="mx-3 my-3">
-    <b-jumbotron bg-variant="info" text-variant="white" :header="`Add Item Screen`" />
+    <b-jumbotron
+      bg-variant="info"
+      text-variant="white"
+      :header="`Add Item Screen`"
+    />
     <h2>Add Items</h2>
     <div class="mt-2 mx-1">
-      <p>Item Name: {{ item_name }}</p>
-      <input v-model="item_name" placeholder="Item Name" />
+      <p>Item Name:</p>
+      <input v-model="product.name" placeholder="Item Name" />
 
-      <p>Item Price: {{ item_price }}</p>
-      <input v-model="item_price" placeholder="Item Price" />
+      <p>Item Price:</p>
+      <input v-model="product.price" placeholder="Item Price" />
 
-      <!-- <span>Item Description</span> -->
-      <p>Item Description {{ item_description }}</p>
-      <textarea v-model="item_description" placeholder="Item Description"></textarea>
+      <p>Item Description:</p>
+      <textarea v-model="product.description" placeholder="Item Description"></textarea>
 
-      <p>Item Rate: {{ item_rate }}</p>
-      <input v-model="item_rate" placeholder="Item Rate" />
+      <p>Item Rate:</p>
+      <input v-model="product.rating" placeholder="Item Rate" />
     </div>
     <div class="mt-2 mx-1">
       <b-button @click="addItem()">Confirm</b-button>
     </div>
     <div class="mt-2 mx-1">
-      <b-button @click="$router.go(-1)">BackToOperator</b-button>
+      <b-button @click="$router.go(-1)">Back To Operator</b-button>
     </div>
-    <!-- <router-link :to="{ path: '/operator/{{name}}' }"><button>Additem</button></router-link> -->
-    <!-- <b-button @click="refresh" class="mb-2">Refresh</b-button>
-    <b-table :items="orders" :fields="fields">
-      <template #cell(operatorId)="cellScope">
-        <span v-if="cellScope.value">
-          {{ cellScope.value }}
-          <b-button @click="updateOrder(cellScope.item._id, 'done')" v-if="cellScope.value === operatorId && cellScope.item.state !== 'done'">
-            Done
-          </b-button>
-        </span>
-        <b-button v-else @click="updateOrder(cellScope.item._id, 'blending')">Start Blending</b-button>
-      </template>
-    </b-table> -->
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, computed, Ref } from "vue";
+import { Operator, Order } from "../../../server/data";
 
-// import { onMounted, ref, computed, Ref } from 'vue'
-// import { Operator, Order } from "../../../server/data"
+import { Product } from "../../../server/data";
 
 // props
 // interface Props {
@@ -58,6 +49,23 @@
 
 // const name = computed(() => operator.value?.name || props.operatorId)
 
+const product: Ref<Product | undefined> = ref({
+  name: "",
+  price: 0,
+  description: "",
+  rating: 0,
+});
+
+function addItem() {
+  // this.itemName = this.item_name
+
+  console.log("wilson");
+  console.log(product.value.name);
+  console.log(product.value.price);
+  console.log(product.value.description);
+  console.log(product.value.rating);
+  // console.log()
+}
 // async function refresh() {
 //   if (props.operatorId) {
 //     operator.value = await (await fetch("/api/operator/" + encodeURIComponent(props.operatorId))).json()
@@ -84,5 +92,4 @@
 //   )
 //   await refresh()
 // }
-
 </script>
