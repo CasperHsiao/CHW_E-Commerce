@@ -306,14 +306,14 @@ app.put("/api/order/:orderId", async (req, res) => {
   res.status(200).json({ status: "ok" })
 })
 
-app.post(
+app.get(
   "/api/logout", 
   (req, res, next) => {
     req.logout((err) => {
       if (err) {
         return next(err)
       }
-      res.redirect("/")
+      res.redirect("/init")
     })
   }
 )

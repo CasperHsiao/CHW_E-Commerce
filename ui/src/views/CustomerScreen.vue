@@ -1,6 +1,7 @@
 <template>
   <div class="mx-3 my-3">
     <b-jumbotron bg-variant="primary" text-variant="white" :header="`Welcome, ${name}`" />
+    <b-button class="mb-2" href="/api/logout" >Logout</b-button>
 
     <h2>Orders</h2>
     <b-button @click="refresh" class="mb-2">Refresh</b-button>

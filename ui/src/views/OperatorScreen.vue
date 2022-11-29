@@ -1,6 +1,7 @@
 <template>
   <div class="mx-3 my-3">
     <b-jumbotron bg-variant="info" text-variant="white" :header="`Work Screen for ${name}`" />
+    <b-button class="mb-2" href="/api/logout" >Logout</b-button>
     <h2>Orders</h2>
     <router-link :to="{ name: 'operatoradditemscreen' }"><b-button class="mb-2">Additem</b-button></router-link>
     <b-button @click="refresh" class="mb-2">Refresh</b-button>
