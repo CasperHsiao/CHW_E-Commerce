@@ -3,10 +3,39 @@
     <b-jumbotron bg-variant="primary" text-variant="white" :header="`Welcome, ${name}`" />
     <b-button class="mb-2" href="/api/logout" >Logout</b-button>
 
-    <h2>Orders</h2>
-    <b-button @click="refresh" class="mb-2">Refresh</b-button>
+    <b-modal size="lg" id="modal-1" title="Your Items!">
+      <b-list-group flush>
+        <b-list-group-item
+          v-for="(ing, idx) in cart"
+          :key="idx"
+          class="d-flex justify-content-between align-items-center"
+        >
+          <span title="ing">{{ ing }}</span>
+          <b-button variant="danger" @click="removeFromCart(idx)">Delete</b-button>
+        </b-list-group-item>
+      </b-list-group>
+      <h3>
+        Total cost: {{ totalCost }}
+      </h3>
+      <b-row align-h="start">
+        <div class="mt-2 mx-1">
+          <!-- <b-button @click="saveCart">Save Cart</b-button> -->
+        </div>
+        <div class="mt-2 mx-1">
+          <b-button @click="checkout">Checkout</b-button>
+          <!-- Note: must save cart before checking out -->
+        </div>
+      </b-row>
+    </b-modal>
+    <h2>My Orders</h2>
+    <b-button @click="refresh" class="mb-2 mt-2">Refresh</b-button>
     <b-table v-if="customer" :items="customer.orders" :fields="orderFields"/>
-    <h2>Shop</h2>
+    <h2 class="text-center">My Shop</h2>
+    <div class="d-flex justify-content-end mr-5 mb-2">
+      <b-button v-b-modal.modal-1 variant="info">
+        Shopping Cart <b-badge variant="light">{{cart.length}}</b-badge>
+      </b-button>
+    </div>
     <b-card-group columns>
       <b-card
         v-for="(prod, idx) in inventory"
@@ -23,29 +52,6 @@
         </b-card-footer>
       </b-card>
     </b-card-group>
-    <h3>Your Cart</h3>
-    <b-list-group flush>
-      <b-list-group-item
-        v-for="(ing, idx) in cart"
-        :key="idx"
-        class="d-flex justify-content-between align-items-center"
-      >
-        <span title="ing">{{ ing }}</span>
-        <b-button variant="danger" @click="removeFromCart(idx)">Delete</b-button>
-      </b-list-group-item>
-    </b-list-group>
-    <h3>
-      Total cost: {{ totalCost }}
-    </h3>
-    <b-row align-h="start">
-    <div class="mt-2 mx-1">
-      <b-button @click="saveCart">Save Cart</b-button>
-    </div>
-    <div class="mt-2 mx-1">
-      <b-button @click="checkout">Checkout</b-button>
-      Note: must save cart before checking out
-    </div>
-  </b-row>
   </div>
 </template>
 
@@ -91,18 +97,18 @@ onMounted(refresh)
 
 const orderFields = [{key: '_id', label: 'Order ID'}, 'state', {key: 'productIds', label: 'Products', formatter: (value: string[]) => {return value.join(", ")}}]
 
-async function saveCart() {
-  await fetch(
-    "/api/customer/" + encodeURIComponent(props.customerId) + "/update-cart",
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PUT",
-      body: JSON.stringify({ productIds: cart.value })
-    }
-  )
-}
+// async function saveCart() {
+//   await fetch(
+//     "/api/customer/" + encodeURIComponent(props.customerId) + "/update-cart",
+//     {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       method: "PUT",
+//       body: JSON.stringify({ productIds: cart.value })
+//     }
+//   )
+// }
 
 async function checkout() {
   await fetch(
@@ -113,7 +119,17 @@ async function checkout() {
 }
 
 async function addToCart(product: string) {
-  cart.value.push(product) 
+  cart.value.push(product)
+  await fetch(
+    "/api/customer/" + encodeURIComponent(props.customerId) + "/update-cart",
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify({ productIds: cart.value })
+    }
+  ) 
 }
 
 async function removeFromCart(idx: number) {
