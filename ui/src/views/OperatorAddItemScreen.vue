@@ -1,8 +1,27 @@
 <template>
   <div class="mx-3 my-3">
-    <b-jumbotron bg-variant="info" text-variant="white" :header="`Add Item Screen `" />
-    <h2>Orders</h2>
-    <button @click="$router.go(-1)">Additem</button>
+    <b-jumbotron bg-variant="info" text-variant="white" :header="`Add Item Screen`" />
+    <h2>Add Items</h2>
+    <div class="mt-2 mx-1">
+      <p>Item Name: {{ item_name }}</p>
+      <input v-model="item_name" placeholder="Item Name" />
+
+      <p>Item Price: {{ item_price }}</p>
+      <input v-model="item_price" placeholder="Item Price" />
+
+      <!-- <span>Item Description</span> -->
+      <p>Item Description {{ item_description }}</p>
+      <textarea v-model="item_description" placeholder="Item Description"></textarea>
+
+      <p>Item Rate: {{ item_rate }}</p>
+      <input v-model="item_rate" placeholder="Item Rate" />
+    </div>
+    <div class="mt-2 mx-1">
+      <b-button @click="addItem()">Confirm</b-button>
+    </div>
+    <div class="mt-2 mx-1">
+      <b-button @click="$router.go(-1)">BackToOperator</b-button>
+    </div>
     <!-- <router-link :to="{ path: '/operator/{{name}}' }"><button>Additem</button></router-link> -->
     <!-- <b-button @click="refresh" class="mb-2">Refresh</b-button>
     <b-table :items="orders" :fields="fields">
@@ -20,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+
 // import { onMounted, ref, computed, Ref } from 'vue'
 // import { Operator, Order } from "../../../server/data"
 
