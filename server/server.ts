@@ -346,21 +346,21 @@ client.connect().then(() => {
         logger.info("oidc " + JSON.stringify(userInfo))
 
         const _id = userInfo.preferred_username
-        // const operator = await operators.findOne({ _id })
-        // if (operator != null) {
-        //   userInfo.roles = ["operator"]
-        // } else {
-        //   await customers.updateOne(
-        //     { _id },
-        //     {
-        //       $set: {
-        //         name: userInfo.name
-        //       }
-        //     },
-        //     { upsert: true }
-        //   )
-        //   userInfo.roles = ["customer"]
-        // }
+        const operator = await operators.findOne({ _id })
+        if (operator != null) {
+          userInfo.roles = ["operator"]
+        } else {
+          await customers.updateOne(
+            { _id },
+            {
+              $set: {
+                name: userInfo.name
+              }
+            },
+            { upsert: true }
+          )
+          userInfo.roles = ["customer"]
+        }
 
         return done(null, userInfo)
       }
@@ -379,7 +379,12 @@ client.connect().then(() => {
       }),
       (req, res) => {
         const _id = req.user.preferred_username
-        res.redirect(`/customer/${_id}`)
+
+        if (req.user.roles.includes("operator")) {
+          res.redirect(`/operator/${_id}`)
+        } else {
+          res.redirect(`/customer/${_id}`)
+        }
       }
     )    
 
