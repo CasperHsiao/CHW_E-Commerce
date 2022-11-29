@@ -5,6 +5,7 @@ import CustomerScreen from '@/views/CustomerScreen.vue'
 import OperatorScreen from '@/views/OperatorScreen.vue'
 import StatusScreen from '@/views/StatusScreen.vue'
 import OperatorAddItemScreen from '@/views/OperatorAddItemScreen.vue'
+import initScreen from '@/views/initScreen.vue'
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -18,6 +19,11 @@ Vue.use(VueRouter)
 const router = new VueRouter({
   mode: "history",
   routes: [
+    {
+      path: "/init",
+      name: "initscreen",
+      component: initScreen,
+    },
     {
       path: "/customer/:customerId",
       component: CustomerScreen,

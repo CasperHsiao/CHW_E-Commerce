@@ -369,13 +369,13 @@ client.connect().then(() => {
     app.get(
       "/api/login", 
       passport.authenticate("oidc", { failureRedirect: "/api/login" }), 
-      (req, res) => res.redirect("/")
+      (req, res) => res.redirect("/init")
     )
     
     app.get(
       "/api/login-callback",
       passport.authenticate("oidc", {
-        successRedirect: "/",
+        successRedirect: "/customer/alice",
         failureRedirect: "/api/login",
       })
     )    

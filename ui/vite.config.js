@@ -18,9 +18,19 @@ export default defineConfig({
 	],
 
 	server: {
-		port: 8096,
+	// 	port: 8096,
+	// 	proxy: {
+	// 		"^/api": {
+	// 			target: "http://127.0.0.1:8095",
+	// 		},
+    // }
+		port: 8080,
 		proxy: {
-			"^/api": {
+			"^/socket.io": {
+				target: "http://127.0.0.1:8095",
+        ws: true
+			},
+      "^/api": {
 				target: "http://127.0.0.1:8095",
 			},
     }
