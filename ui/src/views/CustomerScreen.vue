@@ -11,11 +11,16 @@
       <b-card
         v-for="(prod, idx) in inventory"
         :key="idx"
-        :title="prod.name"
-        :footer="prod.description"
+        no-body
       >
-        <b-card-text>$ {{prod.price}}</b-card-text>
-        <b-button variant="primary" @click="addToCart(prod.name)">Add to cart</b-button>
+        <b-card-body>
+          <b-card-title>{{prod.name}}</b-card-title>
+          <b-card-sub-title class="mb-2">$ {{prod.price}}</b-card-sub-title>
+          <b-card-text>{{prod.description}}</b-card-text>
+        </b-card-body>
+        <b-card-footer>
+          <b-button variant="primary" @click="addToCart(prod.name)">Add to cart</b-button>
+        </b-card-footer>
       </b-card>
     </b-card-group>
     <h3>Your Cart</h3>
