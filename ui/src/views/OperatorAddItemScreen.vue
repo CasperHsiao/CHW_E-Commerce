@@ -56,15 +56,29 @@ const product: Ref<Product | undefined> = ref({
   rating: 0,
 });
 
-function addItem() {
+async function addItem() {
   // this.itemName = this.item_name
-
   console.log("wilson");
   console.log(product.value.name);
   console.log(product.value.price);
   console.log(product.value.description);
   console.log(product.value.rating);
-  // console.log()
+
+  await fetch(
+    "/api/operator/addnewitem",
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify({ 
+        name: product.value.name,
+        price: product.value.price, 
+        description: product.value.description, 
+        rating: product.value.rating,
+        })
+    }
+  )
 }
 // async function refresh() {
 //   if (props.operatorId) {

@@ -11,7 +11,7 @@ import MongoStore from 'connect-mongo'
 import { Issuer, Strategy } from 'openid-client'
 import passport from 'passport'
 import { keycloak } from "./secrets"
-import { Cart, Order } from './data'
+import { Cart, Order, Product } from './data'
 
 if (process.env.PROXY_KEYCLOAK_TO_LOCALHOST) {
   // NOTE: this is a hack to allow Keycloak to run from the 
@@ -239,6 +239,17 @@ app.put("/api/customer/:customerId/update-cart", async (req, res) => {
   )
   res.status(200).json({ status: "ok" })
 })
+
+app.put("/api/operator/addnewitem", async (req, res) => {
+  const add_product: Product = req.body
+  console.log("wilson adding item")
+  console.log(add_product)
+  // console.log(typeof add_product) 
+  // console.log(add_product["productIds"])
+  const addItemResult = await inventory.insertOne(add_product)
+  res.status(200).json({ status: "ok" })
+})
+
 
 app.post("/api/customer/:customerId/checkout-cart", async (req, res) => {
   const result = await orders.updateOne(
