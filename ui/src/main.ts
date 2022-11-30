@@ -3,9 +3,8 @@ import VueRouter from 'vue-router'
 import App from '@/App.vue'
 import CustomerScreen from '@/views/CustomerScreen.vue'
 import OperatorScreen from '@/views/OperatorScreen.vue'
-import StatusScreen from '@/views/StatusScreen.vue'
+import HomeScreen from '@/views/HomeScreen.vue'
 import OperatorAddItemScreen from '@/views/OperatorAddItemScreen.vue'
-import initScreen from '@/views/initScreen.vue'
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -20,16 +19,6 @@ const router = new VueRouter({
   mode: "history",
   routes: [
     {
-      path: "/init",
-      name: "initscreen",
-      component: initScreen,
-    },
-    {
-      path: "/customer/:customerId",
-      component: CustomerScreen,
-      props: ({ params: { customerId }}) => ({ customerId }),
-    },
-    {
       path: "/operator/:operatorId",
       component: OperatorScreen,
       props: ({ params: { operatorId }}) => ({ operatorId }),
@@ -42,8 +31,12 @@ const router = new VueRouter({
     },
     {
       path: "/",
-      component: StatusScreen,
-    }
+      component: HomeScreen,
+    },
+    {
+      path: "/customer",
+      component: CustomerScreen,
+    },
   ],
 })
 

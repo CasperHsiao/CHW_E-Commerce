@@ -1,8 +1,6 @@
 <template>
   <div class="mx-3 my-3">
     <b-jumbotron bg-variant="primary" text-variant="white" :header="`Welcome, ${name}`" />
-    <b-button class="mb-2" href="/api/logout" >Logout</b-button>
-
     <b-modal size="lg" id="modal-1" title="Your Items!">
       <b-list-group flush>
         <b-list-group-item
@@ -56,22 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, Ref } from 'vue'
+import { ref, computed, Ref, watch, inject } from 'vue'
 import { CustomerWithOrders, Product } from "../../../server/data"
 
-// props
-interface Props {
-  customerId: string
-}
-
-// default values for props
-const props = withDefaults(defineProps<Props>(), {
-  customerId: "",
-})
-
 const customer: Ref<CustomerWithOrders | null> = ref(null)
+const user: Ref<any> = inject("user")!
 
-const name = computed(() => customer.value?.name || props.customerId)
+const name = computed(() => customer.value?.name || user.value.name)
 const cart: Ref<string[]> = ref([])
 const inventory: Ref<Product[]> = ref([])
 const totalCost = computed(() => {
@@ -88,31 +77,18 @@ const totalCost = computed(() => {
 async function refresh() {
   inventory.value = await (await fetch("/api/inventory")).json()
 
-  if (props.customerId) {
-    customer.value = await (await fetch("/api/customer/" + encodeURIComponent(props.customerId))).json()
-    cart.value = (await (await fetch("/api/customer/" + encodeURIComponent(props.customerId) + "/cart")).json())?.productIds || []
+  if (user.value) {
+    customer.value = await (await fetch("/api/customer/")).json()
+    cart.value = (await (await fetch("/api/customer/cart")).json())?.productIds || []
   }
 }
-onMounted(refresh)
+watch(user, refresh, {immediate: true})
 
 const orderFields = [{key: '_id', label: 'Order ID'}, 'state', {key: 'productIds', label: 'Products', formatter: (value: string[]) => {return value.join(", ")}}]
 
-// async function saveCart() {
-//   await fetch(
-//     "/api/customer/" + encodeURIComponent(props.customerId) + "/update-cart",
-//     {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       method: "PUT",
-//       body: JSON.stringify({ productIds: cart.value })
-//     }
-//   )
-// }
-
 async function checkout() {
   await fetch(
-    "/api/customer/" + encodeURIComponent(props.customerId) + "/checkout-cart",
+    "/api/customer/checkout-cart",
     { method: "POST" }
   )
   await refresh()
@@ -121,7 +97,7 @@ async function checkout() {
 async function addToCart(product: string) {
   cart.value.push(product)
   await fetch(
-    "/api/customer/" + encodeURIComponent(props.customerId) + "/update-cart",
+    "/api/customer/update-cart",
     {
       headers: {
         "Content-Type": "application/json",
