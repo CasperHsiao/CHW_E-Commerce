@@ -1,6 +1,3 @@
-import { createServer } from "http"
-import { Server } from "socket.io"
-// import { Action, createEmptyGame, doAction, filterCardsForPlayerPerspective, Card } from "./model"
 import express, { NextFunction, Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import pino from 'pino'
@@ -35,7 +32,6 @@ let inventory: Collection
 
 // set up Express
 const app = express()
-const server = createServer(app)
 const port = parseInt(process.env.PORT) || 8095
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -84,101 +80,6 @@ function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
   next()
 }
 
-// set up Socket.IO
-const io = new Server(server)
-
-// convert a connect middleware to a Socket.IO middleware
-const wrap = (middleware: any) => (socket: any, next: any) => middleware(socket.request, {}, next)
-io.use(wrap(sessionMiddleware))
-
-// hard-coded game configuration
-// const playerUserIds = ["dennis", "alice"]
-// let gameState = createEmptyGame(playerUserIds, 1, 2)
-
-// function emitUpdatedCardsForPlayers(cards: Card[], newGame = false) {
-//   gameState.playerNames.forEach((_, i) => {
-//     let updatedCardsFromPlayerPerspective = filterCardsForPlayerPerspective(cards, i)
-//     if (newGame) {
-//       updatedCardsFromPlayerPerspective = updatedCardsFromPlayerPerspective.filter(card => card.locationType !== "unused")
-//     }
-//     console.log("emitting update for player", i, ":", updatedCardsFromPlayerPerspective)
-//     io.to(String(i)).emit(
-//       newGame ? "all-cards" : "updated-cards", 
-//       updatedCardsFromPlayerPerspective,
-//     )
-//   })
-// }
-
-// io.on('connection', client => {
-//   const user = (client.request as any).session?.passport?.user
-//   logger.info("new socket connection for user " + JSON.stringify(user))
-//   if (!user) {
-//     client.disconnect()
-//     return
-//   }
-
-//   function emitGameState() {
-//     client.emit(
-//       "game-state", 
-//       playerIndex,
-//       gameState.currentTurnPlayerIndex,
-//       gameState.phase,
-//       gameState.playCount,
-//     )
-//   }
-  
-//   console.log("New client")
-//   let playerIndex: number | "all" = playerUserIds.indexOf(user.preferred_username)
-//   if (playerIndex === -1) {
-//     playerIndex = "all"
-//   }
-//   client.join(String(playerIndex))
-  
-//   if (typeof playerIndex === "number") {
-//     client.emit(
-//       "all-cards", 
-//       filterCardsForPlayerPerspective(Object.values(gameState.cardsById), playerIndex).filter(card => card.locationType !== "unused"),
-//     )
-//   } else {
-//     client.emit(
-//       "all-cards", 
-//       Object.values(gameState.cardsById),    
-//     )
-//   }
-//   emitGameState()
-
-//   client.on("action", (action: Action) => {
-//     if (typeof playerIndex === "number") {
-//       const updatedCards = doAction(gameState, { ...action, playerIndex })
-//       emitUpdatedCardsForPlayers(updatedCards)
-//     } else {
-//       // no actions allowed from "all"
-//     }
-//     io.to("all").emit(
-//       "updated-cards", 
-//       Object.values(gameState.cardsById),    
-//     )
-//     io.emit(
-//       "game-state", 
-//       null,
-//       gameState.currentTurnPlayerIndex,
-//       gameState.phase,
-//       gameState.playCount,
-//     )
-//   })
-
-//   client.on("new-game", () => {
-//     gameState = createEmptyGame(gameState.playerNames, 1, 2)
-//     const updatedCards = Object.values(gameState.cardsById)
-//     emitUpdatedCardsForPlayers(updatedCards, true)
-//     io.to("all").emit(
-//       "all-cards", 
-//       updatedCards,
-//     )
-//     emitGameState()
-//   })
-// })
-
 // app routes
 app.get("/api/inventory", async (req, res) => {
   res.status(200).json(await inventory.find({}).toArray())
@@ -188,8 +89,9 @@ app.get("/api/orders", async (req, res) => {
   res.status(200).json(await orders.find({ state: { $ne: "cart" }}).toArray())
 })
 
-app.get("/api/customer/:customerId", async (req, res) => {
-  const _id = req.params.customerId
+app.get("/api/customer", checkAuthenticated, async (req, res) => {
+  const _id = (req.user as any).preferred_username
+  logger.info("/api/customer " + _id)
   const customer = await customers.findOne({ _id })
   if (customer == null) {
     res.status(404).json({ _id })
@@ -210,8 +112,8 @@ app.get("/api/operator/:operatorId", async (req, res) => {
   res.status(200).json(operator)
 })
 
-app.get("/api/customer/:customerId/cart", async (req, res) => {
-  const { customerId } = req.params
+app.get("/api/customer/cart", async (req, res) => {
+  const { customerId } = (req.user as any).preferred_username
 
   // TODO: validate customerId
 
@@ -219,13 +121,13 @@ app.get("/api/customer/:customerId/cart", async (req, res) => {
   res.status(200).json(draftOrder || { customerId, productIds: [] })
 })
 
-app.put("/api/customer/:customerId/update-cart", async (req, res) => {
+app.put("/api/customer/update-cart", async (req, res) => {
   const order: Cart = req.body
   // TODO: validate customerId
 
   const result = await orders.updateOne(
     {
-      customerId: req.params.customerId,
+      customerId: (req.user as any).preferred_username,
       state: "cart",
     },
     {
@@ -247,10 +149,10 @@ app.put("/api/operator/addnewitem", async (req, res) => {
 })
 
 
-app.post("/api/customer/:customerId/checkout-cart", async (req, res) => {
+app.post("/api/customer/checkout-cart", async (req, res) => {
   const result = await orders.updateOne(
     {
-      customerId: req.params.customerId,
+      customerId: (req.user as any).preferred_username,
       state: "cart",
     },
     {
@@ -313,14 +215,14 @@ app.put("/api/order/:orderId", async (req, res) => {
   res.status(200).json({ status: "ok" })
 })
 
-app.get(
+app.post(
   "/api/logout", 
   (req, res, next) => {
     req.logout((err) => {
       if (err) {
         return next(err)
       }
-      res.redirect("/init")
+      res.redirect("/")
     })
   }
 )
@@ -376,32 +278,20 @@ client.connect().then(() => {
     app.get(
       "/api/login", 
       passport.authenticate("oidc", { failureRedirect: "/api/login" }), 
-      (req, res) => res.redirect("/init")
+      (req, res) => res.redirect("/")
     )
     
     app.get(
       "/api/login-callback",
       passport.authenticate("oidc", {
+        successRedirect: "/customer",
         failureRedirect: "/api/login",
-      }),
-      (req, res) => {
-        const _id = req.user.preferred_username
-
-        if (req.user.roles.includes("operator")) {
-          res.redirect(`/operator/${_id}`)
-        } else {
-          res.redirect(`/customer/${_id}`)
-        }
-      }
-    )    
+      })
+    )
 
     // start server
-    server.listen(port)
-    logger.info(`Game server listening on port ${port}`)
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`)
+    })
   })
-
-  // start server
-  // app.listen(port, () => {
-  //   console.log(`Server listening on port ${port}`)
-  // })
 })
