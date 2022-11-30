@@ -81,11 +81,11 @@ function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
 }
 
 // app routes
-app.get("/api/inventory", async (req, res) => {
+app.get("/api/inventory", checkAuthenticated, async (req, res) => {
   res.status(200).json(await inventory.find({}).toArray())
 })
 
-app.get("/api/orders", async (req, res) => {
+app.get("/api/orders", checkAuthenticated, async (req, res) => {
   res.status(200).json(await orders.find({ state: { $ne: "cart" }}).toArray())
 })
 
@@ -101,7 +101,7 @@ app.get("/api/customer", checkAuthenticated, async (req, res) => {
   res.status(200).json(customer)
 })
 
-app.get("/api/operator/", async (req, res) => {
+app.get("/api/operator/", checkAuthenticated, async (req, res) => {
   const _id = (req.user as any).preferred_username
   const operator = await operators.findOne({ _id })
   if (operator == null) {
@@ -112,7 +112,7 @@ app.get("/api/operator/", async (req, res) => {
   res.status(200).json(operator)
 })
 
-app.get("/api/customer/cart", async (req, res) => {
+app.get("/api/customer/cart", checkAuthenticated, async (req, res) => {
   const { customerId } = (req.user as any).preferred_username
 
   // TODO: validate customerId
@@ -121,7 +121,7 @@ app.get("/api/customer/cart", async (req, res) => {
   res.status(200).json(draftOrder || { customerId, productIds: [] })
 })
 
-app.put("/api/customer/update-cart", async (req, res) => {
+app.put("/api/customer/update-cart", checkAuthenticated, async (req, res) => {
   const order: Cart = req.body
   // TODO: validate customerId
 
@@ -142,7 +142,7 @@ app.put("/api/customer/update-cart", async (req, res) => {
   res.status(200).json({ status: "ok" })
 })
 
-app.put("/api/operator/addnewitem", async (req, res) => {
+app.put("/api/operator/addnewitem", checkAuthenticated, async (req, res) => {
   const _id = (req.user as any).preferred_username
   const operator = await operators.findOne({ _id })
   if (operator == null) {
@@ -155,7 +155,7 @@ app.put("/api/operator/addnewitem", async (req, res) => {
 })
 
 
-app.post("/api/customer/checkout-cart", async (req, res) => {
+app.post("/api/customer/checkout-cart", checkAuthenticated, async (req, res) => {
   const result = await orders.updateOne(
     {
       customerId: (req.user as any).preferred_username,
@@ -174,7 +174,7 @@ app.post("/api/customer/checkout-cart", async (req, res) => {
   res.status(200).json({ status: "ok" })
 })
 
-app.put("/api/order/:orderId", async (req, res) => {
+app.put("/api/order/:orderId", checkAuthenticated, async (req, res) => {
   const order: Order = req.body
 
   // TODO: validate order object
