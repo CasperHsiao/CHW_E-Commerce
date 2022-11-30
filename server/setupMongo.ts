@@ -1,8 +1,8 @@
 import { MongoClient } from 'mongodb'
-import { Operator, Customer, Ingredient, Product } from './data'
+import { Operator, Customer, Product } from './data'
 
 // Connection URL
-const url = 'mongodb://localhost:27017'
+const url = 'mongodb://127.0.0.1:27017'
 const client = new MongoClient(url)
 
 const operators: Operator[] = [
@@ -24,24 +24,6 @@ const customers: Customer[] = [
   {
     _id: "bob",
     name: "Bob",
-  },
-]
-
-const possibleIngredients: Ingredient[] = [
-  {
-    _id: "A",
-    name: "boba",
-    price: 0.5,
-  },
-  {
-    _id: "B",
-    name: "strawberry",
-    price: 1,
-  },
-  {
-    _id: "C",
-    name: "cat",
-    price: 5,
   },
 ]
 
@@ -87,7 +69,7 @@ async function main() {
   )
 
   // add data
-  console.log("inserting customers", await db.collection("customers").insertMany(customers as any))
+  // console.log("inserting customers", await db.collection("customers").insertMany(customers as any))
   console.log("inserting operators", await db.collection("operators").insertMany(operators as any))
   console.log("inserting products", await db.collection("inventory").insertMany(inventory as any))
 
