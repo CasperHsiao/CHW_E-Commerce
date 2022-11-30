@@ -5,7 +5,7 @@
       text-variant="white"
       :header="`Add Item Screen`"
     />
-    <h2 style="color: Brown;">Add Items</h2>
+    <h2 style="color: Brown;">Add New Items</h2>
     <form>
       <div class="form-group">
         <label style="color: teal;font-weight: 500;">Item Name</label>
