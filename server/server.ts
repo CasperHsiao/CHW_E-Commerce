@@ -101,8 +101,8 @@ app.get("/api/customer", checkAuthenticated, async (req, res) => {
   res.status(200).json(customer)
 })
 
-app.get("/api/operator/:operatorId", async (req, res) => {
-  const _id = req.params.operatorId
+app.get("/api/operator/", async (req, res) => {
+  const _id = (req.user as any).preferred_username
   const operator = await operators.findOne({ _id })
   if (operator == null) {
     res.status(404).json({ _id })
@@ -143,6 +143,12 @@ app.put("/api/customer/update-cart", async (req, res) => {
 })
 
 app.put("/api/operator/addnewitem", async (req, res) => {
+  const _id = (req.user as any).preferred_username
+  const operator = await operators.findOne({ _id })
+  if (operator == null) {
+    res.status(404).json({ _id })
+    return
+  }
   const add_product: Product = req.body
   const addItemResult = await inventory.insertOne(add_product)
   res.status(200).json({ status: "ok" })
