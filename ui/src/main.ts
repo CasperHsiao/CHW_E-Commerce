@@ -19,23 +19,21 @@ const router = new VueRouter({
   mode: "history",
   routes: [
     {
-      path: "/operator/:operatorId",
+      path: "/customer",
+      component: CustomerScreen,
+    },
+    {
+      path: "/operator",
       component: OperatorScreen,
-      props: ({ params: { operatorId }}) => ({ operatorId }),
     },
     {
       path: "/operator/additem",
       name: "operatoradditemscreen",
       component: OperatorAddItemScreen,
-      // props: { params: { operatorId }}) => ({ operatorId }),
     },
     {
       path: "/",
       component: HomeScreen,
-    },
-    {
-      path: "/customer",
-      component: CustomerScreen,
     },
   ],
 })

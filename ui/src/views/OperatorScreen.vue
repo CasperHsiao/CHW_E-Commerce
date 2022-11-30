@@ -9,7 +9,7 @@
       <template #cell(operatorId)="cellScope">
         <span v-if="cellScope.value">
           {{ cellScope.value }}
-          <b-button @click="updateOrder(cellScope.item._id, 'done')" v-if="cellScope.value === operatorId && cellScope.item.state !== 'done'">
+          <b-button @click="updateOrder(cellScope.item._id, 'done')" v-if="cellScope.value === user?.preferred_username && cellScope.item.state !== 'done'">
             Done
           </b-button>
         </span>
@@ -20,31 +20,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, Ref } from 'vue'
+import { watch, ref, computed, Ref, inject } from 'vue'
 import { Operator, Order } from "../../../server/data"
-
-// props
-interface Props {
-  operatorId: string
-}
-
-// default values for props
-const props = withDefaults(defineProps<Props>(), {
-  operatorId: "",
-})
 
 const operator: Ref<Operator | null> = ref(null)
 const orders: Ref<Order[]> = ref([])
 
-const name = computed(() => operator.value?.name || props.operatorId)
+const user: Ref<any> = inject("user")!
+const name = computed(() => operator.value?.name || user.value.name)
 
 async function refresh() {
-  if (props.operatorId) {
-    operator.value = await (await fetch("/api/operator/" + encodeURIComponent(props.operatorId))).json()
+  if (user.value) {
+    operator.value = await (await fetch("/api/operator/")).json()
   }
   orders.value = await (await fetch("/api/orders/")).json()
 }
-onMounted(refresh)
+watch(user, refresh, { immediate: true })
 
 const fields = ["_id", "customerId", "state", {key: 'productIds', label: 'Ingredients', formatter: (value: string[]) => {return value.join(", ")}}, "operatorId"]
 
@@ -57,7 +48,7 @@ async function updateOrder(orderId: string, state: string) {
       },
       method: "PUT",
       body: JSON.stringify({
-        operatorId: props.operatorId,
+        operatorId: user.value.preferred_username,
         state,
       })
     }
