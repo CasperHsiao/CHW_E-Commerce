@@ -10,4 +10,3 @@ playwright/.cache/
 /test-results/
 /playwright-report/
 /playwright/.cache/
-server/secrets.ts
