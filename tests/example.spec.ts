@@ -25,6 +25,21 @@ test('Checkout shopping Cart and add order with the first possible ingredient', 
   const orderItemName = await (await orderItem.innerText()).toString()
   await expect(orderItemName).toContain(lastItemName)
 
+  // Logout and login with operator (admin)
+  await page.getByRole('link', { name: 'Logout' }).click();
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.locator('div .kc-login-tooltip').click()
+
+  await page.getByLabel('Username or email').fill('jim');
+  await page.getByLabel('Password').fill('123');
+  await page.getByRole('button', { name: 'Sign In' }).click();
+
+  await page.getByRole('link', { name: 'My Work Screen' }).click();
+
+  const lastorder = await page.getByRole('row').nth(-1).getByRole('cell').nth(-2);
+  const lastorderName = await (await lastorder.innerText()).toString()
+  await expect(lastorderName).toContain(orderItemName)
+
   // const ingredientName = (await firstPossibleIngredient.innerText()).split('Add ')[1]
   // await firstPossibleIngredient.click()
   // await page.click("text='Save'")
