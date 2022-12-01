@@ -1,7 +1,7 @@
 <template>
   <div class="mx-3 my-3">
     <b-jumbotron bg-variant="primary" text-variant="white" :header="`Welcome, ${name}`" />
-    <b-modal size="lg" id="modal-1" title="Your Items!">
+    <b-modal size="lg" id="modal-1" title="Your Items!" hide-footer>
       <b-list-group flush>
         <b-list-group-item
           v-for="(ing, idx) in cart"
@@ -15,15 +15,9 @@
       <h3>
         Total cost: {{ totalCost }}
       </h3>
-      <b-row align-h="start">
-        <div class="mt-2 mx-1">
-          <!-- <b-button @click="saveCart">Save Cart</b-button> -->
-        </div>
-        <div class="mt-2 mx-1">
-          <b-button @click="checkout">Checkout</b-button>
-          <!-- Note: must save cart before checking out -->
-        </div>
-      </b-row>
+      <div class="mt-2 mx-1">
+        <b-button variant="success" @click="() => {checkout(); $bvModal.hide('modal-1');}" >Checkout</b-button>
+      </div>
     </b-modal>
     <h2>My Orders</h2>
     <b-button @click="refresh" class="mb-2 mt-2">Refresh</b-button>
