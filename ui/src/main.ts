@@ -4,7 +4,6 @@ import App from '@/App.vue'
 import CustomerScreen from '@/views/CustomerScreen.vue'
 import OperatorScreen from '@/views/OperatorScreen.vue'
 import HomeScreen from '@/views/HomeScreen.vue'
-import OperatorAddItemScreen from '@/views/OperatorAddItemScreen.vue'
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -25,11 +24,6 @@ const router = new VueRouter({
     {
       path: "/operator",
       component: OperatorScreen,
-    },
-    {
-      path: "/operator/additem",
-      name: "operatoradditemscreen",
-      component: OperatorAddItemScreen,
     },
     {
       path: "/",
