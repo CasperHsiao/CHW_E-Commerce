@@ -33,10 +33,10 @@ build-job:       # This job runs in the build stage, which runs first.
     # The following line is only necessary because the project is under this subdirectory.
     #- cd lecture22-docker-keycloak-smoothie-stand/
     # - cd ui
-    - docker build -t ui ./Dockerfile.ui
+    - docker build -t ui -f Dockerfile.ui .
     # - cd ..
     # - cd server
-    - docker build -t server ./Dockerfile.server
+    - docker build -t server -f Dockerfile.server .
     # - cd ..
     - cd nginx-load-balancer
     - docker build -t nginx_load_balancer .
