@@ -90,7 +90,7 @@ app.get("/api/orders", checkAuthenticated, async (req, res) => {
 })
 
 app.get("/api/customer", checkAuthenticated, async (req, res) => {
-  const _id = (req.user as any).preferred_username
+  const _id = req.user.preferred_username
   logger.info("/api/customer " + _id)
   const customer = await customers.findOne({ _id })
   if (customer == null) {
@@ -102,7 +102,7 @@ app.get("/api/customer", checkAuthenticated, async (req, res) => {
 })
 
 app.get("/api/operator/", checkAuthenticated, async (req, res) => {
-  const _id = (req.user as any).preferred_username
+  const _id = req.user.preferred_username
   const operator = await operators.findOne({ _id })
   if (operator == null) {
     res.status(404).json({ _id })
@@ -113,7 +113,7 @@ app.get("/api/operator/", checkAuthenticated, async (req, res) => {
 })
 
 app.get("/api/customer/cart", checkAuthenticated, async (req, res) => {
-  const { customerId } = (req.user as any).preferred_username
+  const customerId = req.user.preferred_username
 
   // TODO: validate customerId
 
@@ -127,7 +127,7 @@ app.put("/api/customer/update-cart", checkAuthenticated, async (req, res) => {
 
   const result = await orders.updateOne(
     {
-      customerId: (req.user as any).preferred_username,
+      customerId: req.user.preferred_username,
       state: "cart",
     },
     {
@@ -143,7 +143,7 @@ app.put("/api/customer/update-cart", checkAuthenticated, async (req, res) => {
 })
 
 app.put("/api/operator/addnewitem", checkAuthenticated, async (req, res) => {
-  const _id = (req.user as any).preferred_username
+  const _id = req.user.preferred_username
   const operator = await operators.findOne({ _id })
   if (operator == null) {
     res.status(404).json({ _id })
@@ -158,7 +158,7 @@ app.put("/api/operator/addnewitem", checkAuthenticated, async (req, res) => {
 app.post("/api/customer/checkout-cart", checkAuthenticated, async (req, res) => {
   const result = await orders.updateOne(
     {
-      customerId: (req.user as any).preferred_username,
+      customerId: req.user.preferred_username,
       state: "cart",
     },
     {
