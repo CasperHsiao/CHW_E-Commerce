@@ -37,16 +37,6 @@ test('Checkout shopping Cart and add order with the first possible ingredient', 
   await page.getByRole('link', { name: 'My Work Screen' }).click();
 
   const lastorder = await page.getByRole('row').nth(-1).getByRole('cell').nth(-2);
-  const lastorderName = await (await lastorder.innerText()).toString()
-  await expect(lastorderName).toContain(orderItemName)
-
-  // const ingredientName = (await firstPossibleIngredient.innerText()).split('Add ')[1]
-  // await firstPossibleIngredient.click()
-  // await page.click("text='Save'")
-  // await page.click("text='Submit'")
-
-  
-  // await page.goto('http://127.0.0.1:8096/operator/jim')
-  // const lastChild = await page.locator('tr:last-child >> nth=1')
-  // await expect(await lastChild.locator('td').nth(3).innerText()).toContain(ingredientName.toString())
+  const lastorderName = await (await lastorder.innerText()).toString();
+  await expect(lastorderName).toContain(orderItemName);
 });
