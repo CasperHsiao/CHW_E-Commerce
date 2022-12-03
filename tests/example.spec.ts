@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test('Checkout shopping Cart and add order with the first possible ingredient', async ({ page }) => {
+  // await page.goto(process.env.APP_URL || 'http://127.0.0.1:8080')
   await page.goto('http://127.0.0.1:8080')
-  await expect(page).toHaveTitle(/UI/)
+  // await expect(page).toHaveTitle(/UI/)
 
   await page.getByRole('link', { name: 'Login' }).click();
 
@@ -19,7 +20,7 @@ test('Checkout shopping Cart and add order with the first possible ingredient', 
   await lastItem.locator('.card-footer > .btn').click()
   await page.getByRole('button', { name: 'Shopping Cart' }).click();
   await page.getByRole('button', { name: 'Checkout' }).click();
-  await page.getByRole('button', { name: 'OK' }).click();
+  // await page.getByRole('button', { name: 'OK' }).click();
 
   const orderItem = await page.getByRole('row').nth(-1).getByRole('cell').nth(-1);
   const orderItemName = await (await orderItem.innerText()).toString()

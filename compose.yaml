@@ -24,6 +24,17 @@ services:
       - keycloak
     networks:
       - lecture22
+  e2e:
+    image: e2e
+    build: 
+      context: .
+      dockerfile: Dockerfile.e2e
+    depends_on:
+      - server1
+      # - keycloak
+      # - load_balancer
+    networks:
+      - lecture22
   ui1:
     image: ui
     build: 
