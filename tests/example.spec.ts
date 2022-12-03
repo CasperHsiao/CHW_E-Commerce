@@ -53,7 +53,7 @@ test('Submit form by adding item in operator work screen', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign In' }).click();
 
   await page.getByRole('link', { name: 'My Work Screen' }).click();
-  await page.getByRole('button', { name: 'Additem' }).click();
+  await page.getByRole('button', { name: 'Add Item' }).click();
 
   const itemName = "Apple"
   // Fill in the form
