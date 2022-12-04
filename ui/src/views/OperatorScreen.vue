@@ -27,7 +27,7 @@
     </b-modal>
     <div class="d-flex mb-3">
       <b-button @click="refresh">Refresh</b-button>
-      <b-button class="mx-3" v-b-modal.modal-1 variant="primary">Add Item</b-button>
+      <b-button class="mx-3" v-b-modal.modal-1 variant="primary">Additem</b-button>
     </div>
     <b-table :items="orders" :fields="fields">
       <template #cell(operatorId)="cellScope">
